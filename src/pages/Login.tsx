@@ -48,7 +48,7 @@ const Login: React.FC = () => {
           >
             <Form>
               <Box>
-                <TextField label="Nickname" placeholder="fulano" name="nickname" style={{ width: '100%' }} />
+                <TextField label="Nickname" name="nickname" style={{ width: '100%' }} />
               </Box>
 
               <Box mt={2} display="flex" justifyContent="flex-end">

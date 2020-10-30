@@ -9,6 +9,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import App from './App';
 import SnackBarProvider from './contexts/SnackBarContext';
 import ConfirmProvider from './contexts/ConfirmContext';
+import UserProvider from './contexts/UserContext';
 
 let theme = createMuiTheme();
 
@@ -64,9 +65,11 @@ ReactDOM.render(
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <SnackBarProvider>
           <ConfirmProvider>
-            <HashRouter basename="/">
-              <App />
-            </HashRouter>
+            <UserProvider>
+              <HashRouter basename="/">
+                <App />
+              </HashRouter>
+            </UserProvider>
           </ConfirmProvider>
         </SnackBarProvider>
       </MuiPickersUtilsProvider>

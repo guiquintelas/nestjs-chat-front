@@ -13,6 +13,7 @@ import {
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSnackBarContext } from '../contexts/SnackBarContext';
+import { useUserContext } from '../contexts/UserContext';
 import Menu from './Menu';
 
 const useStyles = makeStyles((theme) => ({
@@ -31,9 +32,7 @@ const Layout: React.FC = ({ children }) => {
   const classes = useStyles();
   const history = useHistory();
   const { snackBar } = useSnackBarContext();
-  const user = {
-    name: 'teste',
-  };
+  const { user, logout } = useUserContext();
 
   return (
     <>
@@ -51,13 +50,13 @@ const Layout: React.FC = ({ children }) => {
                 <Menu
                   anchor={
                     <Button color="inherit" style={{ textTransform: 'none' }}>
-                      {user.name}
+                      {user}
                     </Button>
                   }
                 >
                   <MenuItem
                     onClick={() => {
-                      // logout();
+                      logout();
                       history.push('/login');
                       snackBar('See you next time! Bye bye 👋');
                     }}

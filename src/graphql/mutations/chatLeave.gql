@@ -1,0 +1,3 @@
+mutation ChatLeave($nickname: String!) {
+  chatLeave(nickname: $nickname)
+}

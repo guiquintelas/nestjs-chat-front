@@ -1,9 +1,10 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useChatEnterMutation, useChatLeaveMutation } from '../graphql/generated/graphql';
 
 type UserContextType = {
   user?: string;
-  login: (nickname: string) => void;
-  logout: () => void;
+  login: (nickname: string) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
 const USER_STORAGE = 'user';
@@ -31,6 +32,9 @@ export const UserContext = createContext<UserContextType>({
 const UserProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<string | undefined>(defaultUser);
 
+  const [enterChat] = useChatEnterMutation();
+  const [leaveChat] = useChatLeaveMutation();
+
   useEffect(() => {
     if (user) {
       localStorage.setItem(USER_STORAGE, JSON.stringify(user));
@@ -44,15 +48,29 @@ const UserProvider: React.FC = ({ children }) => {
       value={{
         user,
 
-        login(nickname) {
+        async login(nickname) {
           if (user) {
             return;
           }
 
           setUser(nickname);
+          await enterChat({
+            variables: {
+              nickname,
+            },
+          });
         },
 
-        logout() {
+        async logout() {
+          if (!user) {
+            return;
+          }
+
+          await leaveChat({
+            variables: {
+              nickname: user,
+            },
+          });
           setUser(undefined);
         },
       }}

@@ -55,8 +55,8 @@ const Layout: React.FC = ({ children }) => {
                   }
                 >
                   <MenuItem
-                    onClick={() => {
-                      logout();
+                    onClick={async () => {
+                      await logout();
                       history.push('/login');
                       snackBar('See you next time! Bye bye 👋');
                     }}

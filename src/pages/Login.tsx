@@ -42,7 +42,7 @@ const Login: React.FC = () => {
               nickname: string().required('Fill with your nickname!'),
             })}
             onSubmit={async (data) => {
-              login(data.nickname);
+              await login(data.nickname);
               history.push('/chat');
             }}
           >

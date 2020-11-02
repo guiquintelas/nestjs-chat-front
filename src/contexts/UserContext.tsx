@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { useChatEnterMutation, useChatLeaveMutation } from '../graphql/generated/graphql';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useChatContext } from './ChatContext';
 
 type UserContextType = {
   user?: string;
@@ -32,8 +32,7 @@ export const UserContext = createContext<UserContextType>({
 const UserProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<string | undefined>(defaultUser);
 
-  const [enterChat] = useChatEnterMutation();
-  const [leaveChat] = useChatLeaveMutation();
+  const { enterChat, leaveChat } = useChatContext();
 
   useEffect(() => {
     if (user) {
@@ -54,11 +53,7 @@ const UserProvider: React.FC = ({ children }) => {
           }
 
           setUser(nickname);
-          await enterChat({
-            variables: {
-              nickname,
-            },
-          });
+          await enterChat(nickname);
         },
 
         async logout() {
@@ -66,11 +61,7 @@ const UserProvider: React.FC = ({ children }) => {
             return;
           }
 
-          await leaveChat({
-            variables: {
-              nickname: user,
-            },
-          });
+          await leaveChat(user);
           setUser(undefined);
         },
       }}

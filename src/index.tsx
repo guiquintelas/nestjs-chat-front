@@ -13,6 +13,7 @@ import App from './App';
 import SnackBarProvider from './contexts/SnackBarContext';
 import ConfirmProvider from './contexts/ConfirmContext';
 import UserProvider from './contexts/UserContext';
+import ChatProvider from './contexts/ChatContext';
 
 let theme = createMuiTheme();
 
@@ -101,11 +102,13 @@ ReactDOM.render(
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <SnackBarProvider>
             <ConfirmProvider>
-              <UserProvider>
-                <HashRouter basename="/">
-                  <App />
-                </HashRouter>
-              </UserProvider>
+              <ChatProvider>
+                <UserProvider>
+                  <HashRouter basename="/">
+                    <App />
+                  </HashRouter>
+                </UserProvider>
+              </ChatProvider>
             </ConfirmProvider>
           </SnackBarProvider>
         </MuiPickersUtilsProvider>

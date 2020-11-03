@@ -1,0 +1,8 @@
+query Messages {
+  messages {
+    id
+    content
+    createdBy
+    createdAt
+  }
+}

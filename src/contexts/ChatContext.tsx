@@ -1,14 +1,19 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
+  MessagesQuery,
   useChatEnterMutation,
   useChatLeaveMutation,
   useChatListUsersQuery,
   useChatUserEnteredSubscription,
   useChatUserLeavedSubscription,
+  useMessagesQuery,
 } from '../graphql/generated/graphql';
 import { useSnackBarContext } from './SnackBarContext';
 
+export type Message = MessagesQuery['messages'][0];
+
 type ChatContextType = {
+  messages: Message[];
   chatUsers: string[];
   enterChat: (nickname: string) => Promise<void>;
   leaveChat: (nickname: string) => Promise<void>;
@@ -16,6 +21,7 @@ type ChatContextType = {
 
 export const ChatContext = createContext<ChatContextType>({
   chatUsers: [],
+  messages: [],
   enterChat: () => {
     throw new Error('you should only use this context inside the provider!');
   },
@@ -24,22 +30,18 @@ export const ChatContext = createContext<ChatContextType>({
   },
 });
 
-const ChatProvider: React.FC = ({ children }) => {
-  const [chatUsers, setChatUsers] = useState<string[]>([]);
-  const [enterChat] = useChatEnterMutation();
-  const [leaveChat] = useChatLeaveMutation();
+const useChatUsers = () => {
   const { snackBar } = useSnackBarContext();
-
+  const [chatUsers, setChatUsers] = useState<string[]>([]);
   const { data: userEntered } = useChatUserEnteredSubscription();
   const { data: userLeaved } = useChatUserLeavedSubscription();
-
-  const { data } = useChatListUsersQuery();
+  const { data: initialChatUsers } = useChatListUsersQuery();
 
   useEffect(() => {
-    if (data?.chatListUsers) {
-      setChatUsers(data.chatListUsers);
+    if (initialChatUsers?.chatListUsers) {
+      setChatUsers(initialChatUsers.chatListUsers);
     }
-  }, [data]);
+  }, [initialChatUsers]);
 
   useEffect(() => {
     if (!userEntered?.chatUserEntered) {
@@ -59,9 +61,37 @@ const ChatProvider: React.FC = ({ children }) => {
     snackBar(`The user ${userLeaved.chatUserLeaved} has leaved the chat!`);
   }, [userLeaved]);
 
+  return {
+    chatUsers,
+  };
+};
+
+const useMessages = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  const { data: initialMessages } = useMessagesQuery();
+
+  useEffect(() => {
+    if (initialMessages?.messages) {
+      setMessages(initialMessages.messages);
+    }
+  }, [initialMessages]);
+
+  return {
+    messages,
+  };
+};
+
+const ChatProvider: React.FC = ({ children }) => {
+  const { chatUsers } = useChatUsers();
+  const { messages } = useMessages();
+  const [enterChat] = useChatEnterMutation();
+  const [leaveChat] = useChatLeaveMutation();
+
   return (
     <ChatContext.Provider
       value={{
+        messages,
         chatUsers,
 
         async enterChat(nickname) {

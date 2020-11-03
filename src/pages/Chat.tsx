@@ -7,6 +7,7 @@ import Layout from '../components/Layout';
 import { useSnackBarContext } from '../contexts/SnackBarContext';
 import { useUserContext } from '../contexts/UserContext';
 import { useChatContext } from '../contexts/ChatContext';
+import Message from '../components/Message';
 
 const ChatMessagesBox = withStyles({
   root: {
@@ -56,7 +57,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Chat: React.FC = () => {
   const { user } = useUserContext();
-  const { chatUsers } = useChatContext();
+  const { chatUsers, messages } = useChatContext();
   const classes = useStyles();
   const history = useHistory();
   const { snackBar } = useSnackBarContext();
@@ -72,12 +73,12 @@ const Chat: React.FC = () => {
     <Layout>
       <ChatWrapperGrid container item spacing={2}>
         <ChatColumnGrid item md={3} xs={12} className={classes.chatUsersColumn}>
-          <Grid container direction="column" spacing={1}>
-            <Grid item>
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
               <Typography variant="h6">Users in Chat</Typography>
             </Grid>
             {chatUsers.map((chatUser) => (
-              <Grid item key={chatUser}>
+              <Grid item sm={12} key={chatUser}>
                 {chatUser}
               </Grid>
             ))}
@@ -88,38 +89,9 @@ const Chat: React.FC = () => {
           <Card elevation={4} style={{ height: '100%', position: 'relative' }}>
             <Box p={2} display="flex" flexDirection="column" height="100%">
               <ChatMessagesBox flex="1">
-                <Grid container direction="column" spacing={2}>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                  <Grid item>teste</Grid>
-                </Grid>
+                {messages.map((msg) => (
+                  <Message key={msg.id} msg={msg} />
+                ))}
               </ChatMessagesBox>
 
               <Box pt={2}>

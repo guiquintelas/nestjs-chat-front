@@ -72,7 +72,7 @@ const Layout: React.FC = ({ children }) => {
 
       <Container maxWidth="md" component="main">
         <Box py={3}>
-          <Grid container spacing={4}>
+          <Grid container spacing={4} style={{ overflowX: 'hidden' }}>
             {children}
           </Grid>
         </Box>

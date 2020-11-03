@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
   useChatEnterMutation,
   useChatLeaveMutation,
+  useChatListUsersQuery,
   useChatUserEnteredSubscription,
   useChatUserLeavedSubscription,
 } from '../graphql/generated/graphql';
@@ -31,6 +32,14 @@ const ChatProvider: React.FC = ({ children }) => {
 
   const { data: userEntered } = useChatUserEnteredSubscription();
   const { data: userLeaved } = useChatUserLeavedSubscription();
+
+  const { data } = useChatListUsersQuery();
+
+  useEffect(() => {
+    if (data?.chatListUsers) {
+      setChatUsers(data.chatListUsers);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (!userEntered?.chatUserEntered) {

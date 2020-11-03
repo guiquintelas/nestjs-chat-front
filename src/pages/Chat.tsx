@@ -1,4 +1,4 @@
-import { Box, Card, Grid, IconButton, Input, InputBase, TextField, Theme, Typography } from '@material-ui/core';
+import { Box, Card, Grid, IconButton, InputBase, makeStyles, Theme, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { Send } from 'mdi-material-ui';
 import Layout from '../components/Layout';
 import { useSnackBarContext } from '../contexts/SnackBarContext';
 import { useUserContext } from '../contexts/UserContext';
+import { useChatContext } from '../contexts/ChatContext';
 
 const ChatMessagesBox = withStyles({
   root: {
@@ -15,8 +16,47 @@ const ChatMessagesBox = withStyles({
   },
 })(Box);
 
+const ChatWrapperGrid = withStyles((theme: Theme) => ({
+  root: {
+    [theme.breakpoints.up('sm')]: {
+      height: '80vh',
+      maxHeight: '80vh',
+    },
+    [theme.breakpoints.down('sm')]: {
+      height: `calc(100vh - 56px)`,
+      maxHeight: `calc(100vh - 56px)`,
+      flexDirection: 'column',
+    },
+  },
+}))(Grid);
+
+const ChatColumnGrid = withStyles((theme: Theme) => ({
+  root: {
+    [theme.breakpoints.up('sm')]: {
+      height: '100%',
+    },
+  },
+}))(Grid);
+
+const useStyles = makeStyles((theme: Theme) => ({
+  chatUsersColumn: {
+    [theme.breakpoints.down('sm')]: {
+      flex: '0 1 0%',
+    },
+  },
+
+  chatColumn: {
+    [theme.breakpoints.down('sm')]: {
+      height: '0px',
+      flex: '1 1 0%',
+    },
+  },
+}));
+
 const Chat: React.FC = () => {
   const { user } = useUserContext();
+  const { chatUsers } = useChatContext();
+  const classes = useStyles();
   const history = useHistory();
   const { snackBar } = useSnackBarContext();
 
@@ -29,20 +69,21 @@ const Chat: React.FC = () => {
 
   return (
     <Layout>
-      <Grid container item style={{ height: '80vh', maxHeight: '80vh' }} spacing={2}>
-        <Grid item md={3} xs={3} style={{ height: '100%' }}>
-          <Box mt={2}>
-            <Grid container direction="column" spacing={1}>
-              <Grid item>
-                <Typography variant="h6">Users in Chat</Typography>
-              </Grid>
-              <Grid item>user1</Grid>
-              <Grid item>user2</Grid>
+      <ChatWrapperGrid container item spacing={2}>
+        <ChatColumnGrid item md={3} xs={12} className={classes.chatUsersColumn}>
+          <Grid container direction="column" spacing={1}>
+            <Grid item>
+              <Typography variant="h6">Users in Chat</Typography>
             </Grid>
-          </Box>
-        </Grid>
+            {chatUsers.map((chatUser) => (
+              <Grid item key={chatUser}>
+                {chatUser}
+              </Grid>
+            ))}
+          </Grid>
+        </ChatColumnGrid>
 
-        <Grid item md={9} xs={9} style={{ height: '100%' }}>
+        <ChatColumnGrid item md={9} xs={12} className={classes.chatColumn}>
           <Card elevation={4} style={{ height: '100%', position: 'relative' }}>
             <Box p={2} display="flex" flexDirection="column" height="100%">
               <ChatMessagesBox flex="1">
@@ -99,8 +140,8 @@ const Chat: React.FC = () => {
               </Box>
             </Box>
           </Card>
-        </Grid>
-      </Grid>
+        </ChatColumnGrid>
+      </ChatWrapperGrid>
     </Layout>
   );
 };

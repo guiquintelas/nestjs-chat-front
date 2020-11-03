@@ -8,8 +8,10 @@ import {
   useChatUserLeavedSubscription,
   useMessagesQuery,
   useNewMessageSubscription,
+  useSendMessageMutation,
 } from '../graphql/generated/graphql';
 import { useSnackBarContext } from './SnackBarContext';
+import { useUserContext } from './UserContext';
 
 export type Message = MessagesQuery['messages'][0];
 
@@ -18,6 +20,7 @@ type ChatContextType = {
   chatUsers: string[];
   enterChat: (nickname: string) => Promise<void>;
   leaveChat: (nickname: string) => Promise<void>;
+  sendMessage: (content: string) => Promise<void>;
 };
 
 export const ChatContext = createContext<ChatContextType>({
@@ -27,6 +30,9 @@ export const ChatContext = createContext<ChatContextType>({
     throw new Error('you should only use this context inside the provider!');
   },
   leaveChat: () => {
+    throw new Error('you should only use this context inside the provider!');
+  },
+  sendMessage: () => {
     throw new Error('you should only use this context inside the provider!');
   },
 });
@@ -91,10 +97,12 @@ const useMessages = () => {
 };
 
 const ChatProvider: React.FC = ({ children }) => {
+  const { user } = useUserContext();
   const { chatUsers } = useChatUsers();
   const { messages } = useMessages();
   const [enterChat] = useChatEnterMutation();
   const [leaveChat] = useChatLeaveMutation();
+  const [sendMessage] = useSendMessageMutation();
 
   return (
     <ChatContext.Provider
@@ -114,6 +122,19 @@ const ChatProvider: React.FC = ({ children }) => {
           await leaveChat({
             variables: {
               nickname,
+            },
+          });
+        },
+
+        async sendMessage(content) {
+          if (!user || !content) {
+            return;
+          }
+
+          await sendMessage({
+            variables: {
+              content,
+              nickname: user,
             },
           });
         },

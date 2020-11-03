@@ -1,14 +1,14 @@
-import { Box, Card, Divider, Grid, IconButton, InputBase, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Box, Card, Divider, Grid, makeStyles, Theme, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Send } from 'mdi-material-ui';
 import Layout from '../components/Layout';
+import Message from '../components/Message';
+import NewMessageForm from '../components/NewMessageForm';
+import { useChatContext } from '../contexts/ChatContext';
+import MessageProvider from '../contexts/MessageContext';
 import { useSnackBarContext } from '../contexts/SnackBarContext';
 import { useUserContext } from '../contexts/UserContext';
-import { useChatContext } from '../contexts/ChatContext';
-import Message from '../components/Message';
-import MessageProvider from '../contexts/MessageContext';
 
 const ChatMessagesBox = withStyles({
   root: {
@@ -102,21 +102,7 @@ const Chat: React.FC = () => {
               </Box>
 
               <Box pt={2}>
-                <Box display="flex" height="100%">
-                  <Box flex="1">
-                    <Card>
-                      <Box p={1} px={2}>
-                        <InputBase placeholder="Type your message ..." style={{ margin: 0, width: '100%' }} />
-                      </Box>
-                    </Card>
-                  </Box>
-
-                  <Box pl={2}>
-                    <IconButton>
-                      <Send />
-                    </IconButton>
-                  </Box>
-                </Box>
+                <NewMessageForm />
               </Box>
             </Box>
           </Card>

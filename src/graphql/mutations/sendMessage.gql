@@ -1,0 +1,5 @@
+mutation SendMessage($nickname: String!, $content: String!) {
+  messageSend(nickname: $nickname, content: $content) {
+    id
+  }
+}

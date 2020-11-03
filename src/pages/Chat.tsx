@@ -10,13 +10,14 @@ import MessageProvider from '../contexts/MessageContext';
 import { useSnackBarContext } from '../contexts/SnackBarContext';
 import { useUserContext } from '../contexts/UserContext';
 
-const ChatMessagesBox = withStyles({
+const ChatMessagesBox = withStyles(({ spacing }: Theme) => ({
   root: {
     height: '0px',
     overflowY: 'auto',
     overflowX: 'hidden',
+    paddingRight: spacing(1),
   },
-})(Box);
+}))(Box);
 
 const ChatWrapperGrid = withStyles((theme: Theme) => ({
   root: {

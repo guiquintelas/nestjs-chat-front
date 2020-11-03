@@ -8,6 +8,7 @@ import { useSnackBarContext } from '../contexts/SnackBarContext';
 import { useUserContext } from '../contexts/UserContext';
 import { useChatContext } from '../contexts/ChatContext';
 import Message from '../components/Message';
+import MessageProvider from '../contexts/MessageContext';
 
 const ChatMessagesBox = withStyles({
   root: {
@@ -89,9 +90,11 @@ const Chat: React.FC = () => {
           <Card elevation={4} style={{ height: '100%', position: 'relative' }}>
             <Box p={2} display="flex" flexDirection="column" height="100%">
               <ChatMessagesBox flex="1">
-                {messages.map((msg, idx) => (
-                  <Message key={msg.id} msg={msg} previousMsg={messages[idx - 1] ?? undefined} />
-                ))}
+                <MessageProvider>
+                  {messages.map((msg, idx) => (
+                    <Message key={msg.id} msg={msg} previousMsg={messages[idx - 1] ?? undefined} />
+                  ))}
+                </MessageProvider>
               </ChatMessagesBox>
 
               <Box mx={-2}>

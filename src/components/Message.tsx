@@ -2,9 +2,9 @@ import { Box, Theme, Typography } from '@material-ui/core';
 import { blue, grey } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/styles';
 import React from 'react';
+import { useMessageContext } from '../contexts/MessageContext';
 import { useUserContext } from '../contexts/UserContext';
 import { Message as MessageAPI } from '../graphql/generated/graphql';
-import useHover from '../hooks/util/useHover';
 
 type MessageProps = {
   msg: MessageAPI;
@@ -13,7 +13,7 @@ type MessageProps = {
 
 const Message: React.FC<MessageProps> = ({ msg, previousMsg }) => {
   const { user } = useUserContext();
-  const [ref, isHovering] = useHover();
+  const { isHovering, setHovering } = useMessageContext(msg);
 
   const isCurrentUserMessage = user === msg.createdBy;
   const isSameMessageUser = previousMsg?.createdBy === msg.createdBy;
@@ -50,7 +50,16 @@ const Message: React.FC<MessageProps> = ({ msg, previousMsg }) => {
     >
       {!isSameMessageUser && <AuthorLabel variant="caption">{msg.createdBy}</AuthorLabel>}
       <Box width="100%" display="flex" alignItems="center" flexDirection={isCurrentUserMessage ? 'row-reverse' : 'row'}>
-        <MessagesBox innerRef={ref}>{msg.content}</MessagesBox>
+        <MessagesBox
+          onMouseEnter={() => {
+            setHovering(true);
+          }}
+          onMouseLeave={() => {
+            setHovering(false);
+          }}
+        >
+          {msg.content}
+        </MessagesBox>
         {isHovering ? (
           <Box px={1}>
             <Typography style={{ color: grey[500] }} variant="caption">

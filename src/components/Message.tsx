@@ -24,7 +24,6 @@ const Message: React.FC<MessageProps> = ({ msg, previousMsg }) => {
       color: isCurrentUserMessage ? 'white' : 'inherit',
 
       borderRadius: '15px',
-      marginBottom: spacing(1),
       padding: spacing(1),
       paddingLeft: spacing(2),
       paddingRight: spacing(2),
@@ -47,6 +46,7 @@ const Message: React.FC<MessageProps> = ({ msg, previousMsg }) => {
       flexDirection="column"
       alignItems={isCurrentUserMessage ? 'flex-end' : 'start'}
       mt={isSameMessageUser ? '-5px' : 0}
+      mb={1}
     >
       {!isSameMessageUser && <AuthorLabel variant="caption">{msg.createdBy}</AuthorLabel>}
       <Box width="100%" display="flex" alignItems="center" flexDirection={isCurrentUserMessage ? 'row-reverse' : 'row'}>

@@ -1,4 +1,4 @@
-import { Box, Card, Grid, IconButton, InputBase, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Box, Card, Divider, Grid, IconButton, InputBase, makeStyles, Theme, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -93,6 +93,10 @@ const Chat: React.FC = () => {
                   <Message key={msg.id} msg={msg} />
                 ))}
               </ChatMessagesBox>
+
+              <Box mx={-2}>
+                <Divider />
+              </Box>
 
               <Box pt={2}>
                 <Box display="flex" height="100%">

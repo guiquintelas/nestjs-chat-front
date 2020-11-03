@@ -1,7 +1,8 @@
 import { Box, Theme, Typography } from '@material-ui/core';
 import { blue, grey } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/styles';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useChatContext } from '../contexts/ChatContext';
 import { useMessageContext } from '../contexts/MessageContext';
 import { useUserContext } from '../contexts/UserContext';
 import { Message as MessageAPI } from '../graphql/generated/graphql';
@@ -11,9 +12,26 @@ type MessageProps = {
   previousMsg?: MessageAPI;
 };
 
+const useNewMessageScrollRef = (msg: MessageAPI) => {
+  const { messages } = useChatContext();
+  const messageRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const lastItem = messages[messages.length - 1] ?? false;
+
+    if (lastItem && lastItem.id === msg.id) {
+      // eslint-disable-next-line no-unused-expressions
+      messageRef.current?.scrollIntoView();
+    }
+  }, [messages]);
+
+  return messageRef;
+};
+
 const Message: React.FC<MessageProps> = ({ msg, previousMsg }) => {
   const { user } = useUserContext();
   const { isHovering, setHovering } = useMessageContext(msg);
+  const messageRef = useNewMessageScrollRef(msg);
 
   const isCurrentUserMessage = user === msg.createdBy;
   const isSameMessageUser = previousMsg?.createdBy === msg.createdBy;
@@ -41,34 +59,41 @@ const Message: React.FC<MessageProps> = ({ msg, previousMsg }) => {
   }))(Typography);
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems={isCurrentUserMessage ? 'flex-end' : 'start'}
-      mt={isSameMessageUser ? '-5px' : 0}
-      mb={1}
-    >
-      {!isSameMessageUser && <AuthorLabel variant="caption">{msg.createdBy}</AuthorLabel>}
-      <Box width="100%" display="flex" alignItems="center" flexDirection={isCurrentUserMessage ? 'row-reverse' : 'row'}>
-        <MessagesBox
-          onMouseEnter={() => {
-            setHovering(true);
-          }}
-          onMouseLeave={() => {
-            setHovering(false);
-          }}
+    <div ref={messageRef}>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems={isCurrentUserMessage ? 'flex-end' : 'start'}
+        mt={isSameMessageUser ? '-5px' : 0}
+        mb={1}
+      >
+        {!isSameMessageUser && <AuthorLabel variant="caption">{msg.createdBy}</AuthorLabel>}
+        <Box
+          width="100%"
+          display="flex"
+          alignItems="center"
+          flexDirection={isCurrentUserMessage ? 'row-reverse' : 'row'}
         >
-          {msg.content}
-        </MessagesBox>
-        {isHovering ? (
-          <Box px={1}>
-            <Typography style={{ color: grey[500] }} variant="caption">
-              {new Date(msg.createdAt).toLocaleString()}
-            </Typography>
-          </Box>
-        ) : null}
+          <MessagesBox
+            onMouseEnter={() => {
+              setHovering(true);
+            }}
+            onMouseLeave={() => {
+              setHovering(false);
+            }}
+          >
+            {msg.content}
+          </MessagesBox>
+          {isHovering ? (
+            <Box px={1}>
+              <Typography style={{ color: grey[500] }} variant="caption">
+                {new Date(msg.createdAt).toLocaleString()}
+              </Typography>
+            </Box>
+          ) : null}
+        </Box>
       </Box>
-    </Box>
+    </div>
   );
 };
 

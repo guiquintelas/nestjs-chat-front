@@ -18,6 +18,7 @@ const ChatMessagesBox = withStyles({
 
 const ChatWrapperGrid = withStyles((theme: Theme) => ({
   root: {
+    overflowY: 'hidden',
     [theme.breakpoints.up('sm')]: {
       height: '80vh',
       maxHeight: '80vh',

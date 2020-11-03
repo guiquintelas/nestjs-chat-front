@@ -23,8 +23,8 @@ const ChatWrapperGrid = withStyles((theme: Theme) => ({
   root: {
     overflowY: 'hidden',
     [theme.breakpoints.up('sm')]: {
-      height: '80vh',
-      maxHeight: '80vh',
+      height: '90vh',
+      maxHeight: '90vh',
     },
     [theme.breakpoints.down('sm')]: {
       height: `calc(100vh - 56px)`,

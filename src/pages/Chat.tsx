@@ -89,8 +89,8 @@ const Chat: React.FC = () => {
           <Card elevation={4} style={{ height: '100%', position: 'relative' }}>
             <Box p={2} display="flex" flexDirection="column" height="100%">
               <ChatMessagesBox flex="1">
-                {messages.map((msg) => (
-                  <Message key={msg.id} msg={msg} />
+                {messages.map((msg, idx) => (
+                  <Message key={msg.id} msg={msg} previousMsg={messages[idx - 1] ?? undefined} />
                 ))}
               </ChatMessagesBox>
 

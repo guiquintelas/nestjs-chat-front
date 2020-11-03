@@ -4,22 +4,26 @@ import { withStyles } from '@material-ui/styles';
 import React from 'react';
 import { useUserContext } from '../contexts/UserContext';
 import { Message as MessageAPI } from '../graphql/generated/graphql';
+import useHover from '../hooks/util/useHover';
 
 type MessageProps = {
   msg: MessageAPI;
+  previousMsg?: MessageAPI;
 };
 
-const Message: React.FC<MessageProps> = ({ msg }) => {
+const Message: React.FC<MessageProps> = ({ msg, previousMsg }) => {
   const { user } = useUserContext();
+  const [ref, isHovering] = useHover();
 
   const isCurrentUserMessage = user === msg.createdBy;
+  const isSameMessageUser = previousMsg?.createdBy === msg.createdBy;
 
   const MessagesBox = withStyles(({ spacing }: Theme) => ({
     root: {
       backgroundColor: isCurrentUserMessage ? blue[500] : grey[300],
       color: isCurrentUserMessage ? 'white' : 'inherit',
 
-      borderRadius: '20px',
+      borderRadius: '15px',
       marginBottom: spacing(1),
       padding: spacing(1),
       paddingLeft: spacing(2),
@@ -38,15 +42,22 @@ const Message: React.FC<MessageProps> = ({ msg }) => {
   }))(Typography);
 
   return (
-    <Box display="flex" flexDirection="column" alignItems={isCurrentUserMessage ? 'flex-end' : 'start'}>
-      <AuthorLabel variant="caption">{msg.createdBy}</AuthorLabel>
-      <Box display="flex" alignItems="baseline" flexDirection={isCurrentUserMessage ? 'row-reverse' : 'row'}>
-        <MessagesBox>{msg.content}</MessagesBox>
-        <Box px={1}>
-          <Typography style={{ color: grey[500] }} variant="caption">
-            {new Date(msg.createdAt).toLocaleString()}
-          </Typography>
-        </Box>
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems={isCurrentUserMessage ? 'flex-end' : 'start'}
+      mt={isSameMessageUser ? '-5px' : 0}
+    >
+      {!isSameMessageUser && <AuthorLabel variant="caption">{msg.createdBy}</AuthorLabel>}
+      <Box width="100%" display="flex" alignItems="center" flexDirection={isCurrentUserMessage ? 'row-reverse' : 'row'}>
+        <MessagesBox innerRef={ref}>{msg.content}</MessagesBox>
+        {isHovering ? (
+          <Box px={1}>
+            <Typography style={{ color: grey[500] }} variant="caption">
+              {new Date(msg.createdAt).toLocaleString()}
+            </Typography>
+          </Box>
+        ) : null}
       </Box>
     </Box>
   );

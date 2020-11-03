@@ -7,6 +7,7 @@ import {
   useChatUserEnteredSubscription,
   useChatUserLeavedSubscription,
   useMessagesQuery,
+  useNewMessageSubscription,
 } from '../graphql/generated/graphql';
 import { useSnackBarContext } from './SnackBarContext';
 
@@ -70,12 +71,19 @@ const useMessages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
   const { data: initialMessages } = useMessagesQuery();
+  const { data } = useNewMessageSubscription();
 
   useEffect(() => {
     if (initialMessages?.messages) {
       setMessages(initialMessages.messages);
     }
   }, [initialMessages]);
+
+  useEffect(() => {
+    if (data?.messageSent) {
+      setMessages([...messages, data.messageSent]);
+    }
+  }, [data]);
 
   return {
     messages,

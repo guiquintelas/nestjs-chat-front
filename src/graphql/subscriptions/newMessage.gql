@@ -1,0 +1,8 @@
+subscription NewMessage {
+  messageSent {
+    id
+    content
+    createdBy
+    createdAt
+  }
+}

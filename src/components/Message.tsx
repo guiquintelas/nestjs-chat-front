@@ -1,9 +1,8 @@
-import { Box, Theme, Typography } from '@material-ui/core';
+import { Box, makeStyles, Theme, Typography } from '@material-ui/core';
 import { blue, grey } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/styles';
 import React, { useEffect, useRef } from 'react';
 import { useChatContext } from '../contexts/ChatContext';
-import { useMessageContext } from '../contexts/MessageContext';
 import { useUserContext } from '../contexts/UserContext';
 import { Message as MessageAPI } from '../graphql/generated/graphql';
 
@@ -28,10 +27,21 @@ const useNewMessageScrollRef = (msg: MessageAPI) => {
   return messageRef;
 };
 
+const useStyles = makeStyles(() => ({
+  root: {
+    '&:hover > $dateLabel': {
+      display: 'inherit',
+    },
+  },
+  dateLabel: {
+    display: 'none',
+  },
+}));
+
 const Message: React.FC<MessageProps> = ({ msg, previousMsg }) => {
   const { user } = useUserContext();
-  const { isHovering, setHovering } = useMessageContext(msg);
   const messageRef = useNewMessageScrollRef(msg);
+  const classes = useStyles();
 
   const isCurrentUserMessage = user === msg.createdBy;
   const isSameMessageUser = previousMsg?.createdBy === msg.createdBy;
@@ -64,6 +74,7 @@ const Message: React.FC<MessageProps> = ({ msg, previousMsg }) => {
         display="flex"
         flexDirection="column"
         alignItems={isCurrentUserMessage ? 'flex-end' : 'start'}
+        px={{ xs: 1, sm: 2 }}
         mt={isSameMessageUser ? '-5px' : 0}
         mb={1}
       >
@@ -73,24 +84,15 @@ const Message: React.FC<MessageProps> = ({ msg, previousMsg }) => {
           display="flex"
           alignItems="center"
           flexDirection={isCurrentUserMessage ? 'row-reverse' : 'row'}
+          className={classes.root}
         >
-          <MessagesBox
-            onMouseEnter={() => {
-              setHovering(true);
-            }}
-            onMouseLeave={() => {
-              setHovering(false);
-            }}
-          >
-            {msg.content}
-          </MessagesBox>
-          {isHovering ? (
-            <Box px={1}>
-              <Typography style={{ color: grey[500] }} variant="caption">
-                {new Date(msg.createdAt).toLocaleString()}
-              </Typography>
-            </Box>
-          ) : null}
+          <MessagesBox>{msg.content}</MessagesBox>
+
+          <Box px={1} className={classes.dateLabel}>
+            <Typography style={{ color: grey[500] }} variant="caption">
+              {new Date(msg.createdAt).toLocaleString()}
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </div>

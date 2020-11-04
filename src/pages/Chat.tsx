@@ -1,4 +1,4 @@
-import { Box, Card, Divider, Grid, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Box, Divider, Grid, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -6,7 +6,6 @@ import Layout from '../components/Layout';
 import Message from '../components/Message';
 import NewMessageForm from '../components/NewMessageForm';
 import { useChatContext } from '../contexts/ChatContext';
-import MessageProvider from '../contexts/MessageContext';
 import { useSnackBarContext } from '../contexts/SnackBarContext';
 import { useUserContext } from '../contexts/UserContext';
 
@@ -90,14 +89,12 @@ const Chat: React.FC = () => {
           <Paper elevation={4} style={{ height: '100%', position: 'relative' }}>
             <Box display="flex" flexDirection="column" height="100%">
               <ChatMessagesBox flex="1">
-                <MessageProvider>
-                  {messages.map((msg, idx) => (
-                    <Message key={msg.id} msg={msg} previousMsg={messages[idx - 1] ?? undefined} />
-                  ))}
-                </MessageProvider>
+                {messages.map((msg, idx) => (
+                  <Message key={msg.id} msg={msg} previousMsg={messages[idx - 1] ?? undefined} />
+                ))}
               </ChatMessagesBox>
 
-                <Divider />
+              <Divider />
 
               <Box p={2}>
                 <NewMessageForm />

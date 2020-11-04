@@ -10,12 +10,11 @@ import MessageProvider from '../contexts/MessageContext';
 import { useSnackBarContext } from '../contexts/SnackBarContext';
 import { useUserContext } from '../contexts/UserContext';
 
-const ChatMessagesBox = withStyles(({ spacing }: Theme) => ({
+const ChatMessagesBox = withStyles(() => ({
   root: {
     height: '0px',
     overflowY: 'auto',
     overflowX: 'hidden',
-    paddingRight: spacing(1),
   },
 }))(Box);
 
@@ -88,8 +87,8 @@ const Chat: React.FC = () => {
         </ChatColumnGrid>
 
         <ChatColumnGrid item md={9} xs={12} className={classes.chatColumn}>
-          <Card elevation={4} style={{ height: '100%', position: 'relative' }}>
-            <Box p={2} display="flex" flexDirection="column" height="100%">
+          <Paper elevation={4} style={{ height: '100%', position: 'relative' }}>
+            <Box display="flex" flexDirection="column" height="100%">
               <ChatMessagesBox flex="1">
                 <MessageProvider>
                   {messages.map((msg, idx) => (
@@ -98,15 +97,13 @@ const Chat: React.FC = () => {
                 </MessageProvider>
               </ChatMessagesBox>
 
-              <Box mx={-2}>
                 <Divider />
-              </Box>
 
-              <Box pt={2}>
+              <Box p={2}>
                 <NewMessageForm />
               </Box>
             </Box>
-          </Card>
+          </Paper>
         </ChatColumnGrid>
       </ChatWrapperGrid>
     </Layout>

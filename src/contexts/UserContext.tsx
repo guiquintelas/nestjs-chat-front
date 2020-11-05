@@ -42,6 +42,18 @@ const UserProvider: React.FC = ({ children }) => {
     }
   }, [user]);
 
+  // make sure the users in is chat
+  // this fixes when the backend DB is cleared but
+  // the browser localstorage still has the users persisted
+  useEffect(() => {
+    const autoEnterChat = async () => {
+      if (user) {
+        await enterChat(user);
+      }
+    };
+    autoEnterChat();
+  }, []);
+
   return (
     <UserContext.Provider
       value={{

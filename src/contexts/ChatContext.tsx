@@ -41,13 +41,13 @@ const useChatUsers = () => {
   const [chatUsers, setChatUsers] = useState<string[]>([]);
   const { data: userEntered } = useChatUserEnteredSubscription();
   const { data: userLeaved } = useChatUserLeavedSubscription();
-  const { data: initialChatUsers } = useChatListUsersQuery();
+  const { data: chatUsersRes, refetch: fetchChatUsers } = useChatListUsersQuery();
 
   useEffect(() => {
-    if (initialChatUsers?.chatListUsers) {
-      setChatUsers(initialChatUsers.chatListUsers);
+    if (chatUsersRes?.chatListUsers) {
+      setChatUsers(chatUsersRes.chatListUsers);
     }
-  }, [initialChatUsers]);
+  }, [chatUsersRes]);
 
   useEffect(() => {
     if (!userEntered?.chatUserEntered) {
@@ -69,6 +69,7 @@ const useChatUsers = () => {
 
   return {
     chatUsers,
+    fetchChatUsers,
   };
 };
 
@@ -96,7 +97,7 @@ const useMessages = () => {
 };
 
 const ChatProvider: React.FC = ({ children }) => {
-  const { chatUsers } = useChatUsers();
+  const { chatUsers, fetchChatUsers } = useChatUsers();
   const { messages } = useMessages();
   const [enterChat] = useChatEnterMutation();
   const [leaveChat] = useChatLeaveMutation();
@@ -114,6 +115,8 @@ const ChatProvider: React.FC = ({ children }) => {
               nickname,
             },
           });
+
+          fetchChatUsers();
         },
 
         async leaveChat(nickname) {

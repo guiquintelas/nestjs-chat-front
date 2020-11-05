@@ -36,6 +36,7 @@ export const ChatContext = createContext<ChatContextType>({
   },
 });
 
+// hook to separate specific ChatUser logic from provider
 const useChatUsers = () => {
   const { snackBar } = useSnackBarContext();
   const [chatUsers, setChatUsers] = useState<string[]>([]);
@@ -43,12 +44,16 @@ const useChatUsers = () => {
   const { data: userLeaved } = useChatUserLeavedSubscription();
   const { data: chatUsersRes, refetch: fetchChatUsers } = useChatListUsersQuery();
 
+  // fetch chat users in app startup
   useEffect(() => {
     if (chatUsersRes?.chatListUsers) {
       setChatUsers(chatUsersRes.chatListUsers);
     }
   }, [chatUsersRes]);
 
+  // handles new user subscription event
+  // - add to chatUsers
+  // - alerts current user via snackbar
   useEffect(() => {
     if (!userEntered?.chatUserEntered) {
       return;
@@ -58,6 +63,9 @@ const useChatUsers = () => {
     snackBar(`The user ${userEntered.chatUserEntered} has joined!`);
   }, [userEntered]);
 
+  // handles user leaving chat subscription event
+  // - remove it from chatUsers
+  // - alerts current user via snackbar
   useEffect(() => {
     if (!userLeaved?.chatUserLeaved) {
       return;
@@ -73,18 +81,21 @@ const useChatUsers = () => {
   };
 };
 
+// hook to separate specific Messages logic from provider
 const useMessages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
   const { data: initialMessages } = useMessagesQuery();
   const { data } = useNewMessageSubscription();
 
+  // fetch chat messages in app startup
   useEffect(() => {
     if (initialMessages?.messages) {
       setMessages(initialMessages.messages);
     }
   }, [initialMessages]);
 
+  // handles new message subscription event
   useEffect(() => {
     if (data?.messageSent) {
       setMessages([...messages, data.messageSent]);

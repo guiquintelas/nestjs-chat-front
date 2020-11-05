@@ -12,6 +12,7 @@ const USER_STORAGE = 'user';
 const loadedJsonUserData = localStorage.getItem(USER_STORAGE);
 let defaultUser: string | undefined;
 
+// tries to initialize user with local storage data
 try {
   defaultUser = loadedJsonUserData ? JSON.parse(loadedJsonUserData) : undefined;
 } catch (_) {
@@ -31,9 +32,9 @@ export const UserContext = createContext<UserContextType>({
 
 const UserProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<string | undefined>(defaultUser);
-
   const { enterChat, leaveChat } = useChatContext();
 
+  // persists every user change in local storage
   useEffect(() => {
     if (user) {
       localStorage.setItem(USER_STORAGE, JSON.stringify(user));

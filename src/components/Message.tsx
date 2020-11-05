@@ -15,6 +15,8 @@ const useNewMessageScrollRef = (msg: MessageAPI) => {
   const { messages } = useChatContext();
   const messageRef = useRef<HTMLDivElement>(null);
 
+  // scrolls the new message into view
+  // otherwise the message would be hidden bellow the current scroll
   useEffect(() => {
     const lastItem = messages[messages.length - 1] ?? false;
 
@@ -27,6 +29,7 @@ const useNewMessageScrollRef = (msg: MessageAPI) => {
   return messageRef;
 };
 
+// css animation to show/hide date label on message hover
 const useStyles = makeStyles(() => ({
   root: {
     '&:hover > $dateLabel': {

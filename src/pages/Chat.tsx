@@ -88,7 +88,7 @@ const Chat: React.FC = () => {
         <ChatColumnGrid item md={9} xs={12} className={classes.chatColumn}>
           <Paper elevation={4} style={{ height: '100%', position: 'relative' }}>
             <Box display="flex" flexDirection="column" height="100%">
-              <ChatMessagesBox flex="1">
+              <ChatMessagesBox flex="1" pt={2}>
                 {messages.map((msg, idx) => (
                   <Message key={msg.id} msg={msg} previousMsg={messages[idx - 1] ?? undefined} />
                 ))}

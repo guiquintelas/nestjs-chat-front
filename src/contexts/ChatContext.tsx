@@ -11,7 +11,6 @@ import {
   useSendMessageMutation,
 } from '../graphql/generated/graphql';
 import { useSnackBarContext } from './SnackBarContext';
-import { useUserContext } from './UserContext';
 
 export type Message = MessagesQuery['messages'][0];
 
@@ -20,7 +19,7 @@ type ChatContextType = {
   chatUsers: string[];
   enterChat: (nickname: string) => Promise<void>;
   leaveChat: (nickname: string) => Promise<void>;
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, nickname: string) => Promise<void>;
 };
 
 export const ChatContext = createContext<ChatContextType>({
@@ -97,7 +96,6 @@ const useMessages = () => {
 };
 
 const ChatProvider: React.FC = ({ children }) => {
-  const { user } = useUserContext();
   const { chatUsers } = useChatUsers();
   const { messages } = useMessages();
   const [enterChat] = useChatEnterMutation();
@@ -126,15 +124,15 @@ const ChatProvider: React.FC = ({ children }) => {
           });
         },
 
-        async sendMessage(content) {
-          if (!user || !content) {
+        async sendMessage(content, nickname) {
+          if (!content) {
             return;
           }
 
           await sendMessage({
             variables: {
               content,
-              nickname: user,
+              nickname,
             },
           });
         },

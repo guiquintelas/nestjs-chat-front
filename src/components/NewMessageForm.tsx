@@ -1,16 +1,17 @@
-import { Box, Card, IconButton, InputBase, Tooltip } from '@material-ui/core';
+import { Box, IconButton, InputBase, Tooltip } from '@material-ui/core';
 import { grey } from '@material-ui/core/colors';
-import { useTheme } from '@material-ui/styles';
 import { Send } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { useChatContext } from '../contexts/ChatContext';
+import { useUserContext } from '../contexts/UserContext';
 
 const NewMessageForm: React.FC = () => {
   const [content, setContent] = useState('');
   const { sendMessage } = useChatContext();
+  const { user } = useUserContext();
 
   const submit = async () => {
-    await sendMessage(content);
+    await sendMessage(content, user!);
     setContent('');
   };
 

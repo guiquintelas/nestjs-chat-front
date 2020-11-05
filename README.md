@@ -16,12 +16,12 @@ cp .env-example .env
 docker-compose up -d
 yarn && yarn start:dev
 
-# now we can run the front-end
+# and now, in a new terminal, we can run the front-end
 cd ..
 git clone https://github.com/guiquintelas/nestjs-chat-front.git
 cd nestjs-chat-front
 cp .env-example .env
-yarn
+yarn # install dependencies
 yarn gen # generate typescript typing ans react hooks
 yarn start
 ```

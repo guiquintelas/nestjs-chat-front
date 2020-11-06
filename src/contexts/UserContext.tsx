@@ -62,7 +62,7 @@ const UserProvider: React.FC = ({ children }) => {
 
         async login(nickname) {
           if (user) {
-            return;
+            await leaveChat(user);
           }
 
           setUser(nickname);

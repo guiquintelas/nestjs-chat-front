@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -26,7 +26,12 @@ const Login: React.FC = () => {
   const classes = useStyles();
   const theme = useTheme();
   const history = useHistory();
-  const { login } = useUserContext();
+  const { login, user } = useUserContext();
+  const [loggedInUser, setCurrentUser] = useState<string | undefined>();
+
+  useEffect(() => {
+    setCurrentUser(user);
+  }, []);
 
   return (
     <Grid container direction="row" justify="center" alignItems="center" className={classes.root}>
@@ -48,12 +53,26 @@ const Login: React.FC = () => {
           >
             <Form>
               <Box>
-                <TextField label="Nickname" name="nickname" style={{ width: '100%' }} />
+                <TextField label="Nickname" name="nickname" value={loggedInUser ?? ''} style={{ width: '100%' }} />
               </Box>
 
+              {loggedInUser && (
+                <Box py={1} textAlign="center">
+                  {"You're already logged in! If you join the chat "}
+                  <em>again</em>
+                  {' the old nickname will be lost!'}
+                </Box>
+              )}
+
               <Box mt={2} display="flex" justifyContent="flex-end">
+                {loggedInUser && (
+                  <Box pr={2}>
+                    <Button onClick={() => history.push('/chat')}>Go back</Button>
+                  </Box>
+                )}
+
                 <Button color="primary" variant="contained" type="submit">
-                  Enter Chat
+                  {loggedInUser ? 'Enter Chat Again' : 'Enter Chat'}
                 </Button>
               </Box>
             </Form>

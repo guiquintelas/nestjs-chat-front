@@ -1,13 +1,10 @@
 import { Box, Divider, Grid, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
-import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import React from 'react';
 import Layout from '../components/Layout';
 import Message from '../components/Message';
 import NewMessageForm from '../components/NewMessageForm';
 import { useChatContext } from '../contexts/ChatContext';
-import { useSnackBarContext } from '../contexts/SnackBarContext';
-import { useUserContext } from '../contexts/UserContext';
 
 const ChatMessagesBox = withStyles(() => ({
   root: {
@@ -56,18 +53,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const Chat: React.FC = () => {
-  const { user } = useUserContext();
   const { chatUsers, messages } = useChatContext();
   const classes = useStyles();
-  const history = useHistory();
-  const { snackBar } = useSnackBarContext();
-
-  useEffect(() => {
-    if (!user) {
-      history.push('/login');
-      snackBar('Please choose your nickname before entering the chat!', 'danger');
-    }
-  }, []);
 
   return (
     <Layout>

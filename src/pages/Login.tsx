@@ -5,9 +5,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Button, Paper, useTheme } from '@material-ui/core';
 import { object, string } from 'yup';
 import { Form, Formik } from 'formik';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import TextField from '../components/TextField';
 import { useUserContext } from '../contexts/UserContext';
+import { useSnackBarContext } from '../contexts/SnackBarContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,13 +25,19 @@ const useStyles = makeStyles((theme) => ({
 
 const Login: React.FC = () => {
   const classes = useStyles();
+  const { snackBar } = useSnackBarContext();
   const theme = useTheme();
   const history = useHistory();
+  const location = useLocation();
   const { login, user } = useUserContext();
   const [loggedInUser, setCurrentUser] = useState<string | undefined>();
 
   useEffect(() => {
     setCurrentUser(user);
+
+    if (location?.state?.errorMsg) {
+      snackBar('Please choose your nickname before entering the chat!', 'danger');
+    }
   }, []);
 
   return (

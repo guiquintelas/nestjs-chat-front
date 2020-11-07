@@ -102,13 +102,11 @@ ReactDOM.render(
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <SnackBarProvider>
             <ConfirmProvider>
-              <ChatProvider>
                 <UserProvider>
                   <HashRouter basename="/">
                     <App />
                   </HashRouter>
                 </UserProvider>
-              </ChatProvider>
             </ConfirmProvider>
           </SnackBarProvider>
         </MuiPickersUtilsProvider>

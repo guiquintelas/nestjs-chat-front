@@ -44,7 +44,11 @@ const UserProvider: React.FC = ({ children }) => {
     if (user) {
       localStorage.setItem(USER_STORAGE, JSON.stringify(user));
       if (wsLink) {
-        (wsLink as any).subscriptionClient.close(false, false);
+        try {
+          (wsLink as any).subscriptionClient.close(false, false);
+        } catch (error) {
+          console.log('No websocket was found');
+        }
       }
     } else {
       localStorage.removeItem(USER_STORAGE);

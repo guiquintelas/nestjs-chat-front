@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useChatContext } from './ChatContext';
+import { useChatEnterMutation, useChatLeaveMutation } from '../graphql/generated/graphql';
 
 type UserContextType = {
   user?: string;
@@ -9,16 +9,19 @@ type UserContextType = {
 
 const USER_STORAGE = 'user';
 
-const loadedJsonUserData = localStorage.getItem(USER_STORAGE);
-let defaultUser: string | undefined;
+export const getUserFromLocalStorage = (): string | undefined => {
+  const loadedJsonUserData = localStorage.getItem(USER_STORAGE);
 
-// tries to initialize user with local storage data
-try {
-  defaultUser = loadedJsonUserData ? JSON.parse(loadedJsonUserData) : undefined;
-} catch (_) {
-  // if json is corrupted
-  defaultUser = undefined;
-}
+  // tries to initialize user with local storage data
+  try {
+    return loadedJsonUserData ? JSON.parse(loadedJsonUserData) : undefined;
+  } catch (_) {
+    // if json is corrupted
+    return undefined;
+  }
+};
+
+const defaultUser = getUserFromLocalStorage();
 
 export const UserContext = createContext<UserContextType>({
   user: defaultUser,
@@ -31,8 +34,9 @@ export const UserContext = createContext<UserContextType>({
 });
 
 const UserProvider: React.FC = ({ children }) => {
+  const [enterChat] = useChatEnterMutation();
+  const [leaveChat] = useChatLeaveMutation();
   const [user, setUser] = useState<string | undefined>(defaultUser);
-  const { enterChat, leaveChat } = useChatContext();
 
   // persists every user change in local storage
   useEffect(() => {
@@ -49,7 +53,11 @@ const UserProvider: React.FC = ({ children }) => {
   useEffect(() => {
     const autoEnterChat = async () => {
       if (user) {
-        await enterChat(user);
+        await enterChat({
+          variables: {
+            nickname: user,
+          },
+        });
       }
     };
     autoEnterChat();
@@ -62,11 +70,19 @@ const UserProvider: React.FC = ({ children }) => {
 
         async login(nickname) {
           if (user) {
-            await leaveChat(user);
+            await leaveChat({
+              variables: {
+                nickname: user,
+              },
+            });
           }
 
           setUser(nickname);
-          await enterChat(nickname);
+          await enterChat({
+            variables: {
+              nickname,
+            },
+          });
         },
 
         async logout() {
@@ -74,7 +90,11 @@ const UserProvider: React.FC = ({ children }) => {
             return;
           }
 
-          await leaveChat(user);
+          await leaveChat({
+            variables: {
+              nickname: user,
+            },
+          });
           setUser(undefined);
         },
       }}

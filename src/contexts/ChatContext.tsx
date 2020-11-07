@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
   MessagesQuery,
-  useChatEnterMutation,
-  useChatLeaveMutation,
   useChatListUsersQuery,
   useChatUserEnteredSubscription,
   useChatUserLeavedSubscription,
@@ -11,26 +9,19 @@ import {
   useSendMessageMutation,
 } from '../graphql/generated/graphql';
 import { useSnackBarContext } from './SnackBarContext';
+import { useUserContext } from './UserContext';
 
 export type Message = MessagesQuery['messages'][0];
 
 type ChatContextType = {
   messages: Message[];
   chatUsers: string[];
-  enterChat: (nickname: string) => Promise<void>;
-  leaveChat: (nickname: string) => Promise<void>;
   sendMessage: (content: string, nickname: string) => Promise<void>;
 };
 
 export const ChatContext = createContext<ChatContextType>({
   chatUsers: [],
   messages: [],
-  enterChat: () => {
-    throw new Error('you should only use this context inside the provider!');
-  },
-  leaveChat: () => {
-    throw new Error('you should only use this context inside the provider!');
-  },
   sendMessage: () => {
     throw new Error('you should only use this context inside the provider!');
   },
@@ -87,16 +78,16 @@ const useChatUsers = () => {
 
   return {
     chatUsers,
-    fetchChatUsers,
   };
 };
 
 // hook to separate specific Messages logic from provider
 const useMessages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const { user } = useUserContext();
 
-  const { data: initialMessages } = useMessagesQuery();
-  const { data } = useNewMessageSubscription();
+  const { data: initialMessages, refetch: fetchMessages } = useMessagesQuery();
+  const { data: newMessageEvent } = useNewMessageSubscription();
 
   // fetch chat messages in app startup
   useEffect(() => {
@@ -105,12 +96,21 @@ const useMessages = () => {
     }
   }, [initialMessages]);
 
+  useEffect(() => {
+    const userLoggedIn = async () => {
+      if (user) {
+        await fetchMessages();
+      }
+    };
+    userLoggedIn();
+  }, [user]);
+
   // handles new message subscription event
   useEffect(() => {
-    if (data?.messageSent) {
-      setMessages([...messages, data.messageSent]);
+    if (newMessageEvent?.messageSent) {
+      setMessages([...messages, newMessageEvent.messageSent]);
     }
-  }, [data]);
+  }, [newMessageEvent]);
 
   return {
     messages,
@@ -118,10 +118,9 @@ const useMessages = () => {
 };
 
 const ChatProvider: React.FC = ({ children }) => {
-  const { chatUsers, fetchChatUsers } = useChatUsers();
+  const { chatUsers } = useChatUsers();
   const { messages } = useMessages();
-  const [enterChat] = useChatEnterMutation();
-  const [leaveChat] = useChatLeaveMutation();
+
   const [sendMessage] = useSendMessageMutation();
 
   return (
@@ -129,24 +128,6 @@ const ChatProvider: React.FC = ({ children }) => {
       value={{
         messages,
         chatUsers,
-
-        async enterChat(nickname) {
-          await enterChat({
-            variables: {
-              nickname,
-            },
-          });
-
-          fetchChatUsers();
-        },
-
-        async leaveChat(nickname) {
-          await leaveChat({
-            variables: {
-              nickname,
-            },
-          });
-        },
 
         async sendMessage(content, nickname) {
           if (!content) {

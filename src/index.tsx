@@ -90,7 +90,13 @@ const splitLink = split(
 );
 
 const apolloClient = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      ChatListUsersQuery: {
+        keyFields: [],
+      },
+    },
+  }),
   link: splitLink,
 });
 

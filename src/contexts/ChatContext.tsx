@@ -38,11 +38,12 @@ export const ChatContext = createContext<ChatContextType>({
 
 // hook to separate specific ChatUser logic from provider
 const useChatUsers = () => {
+  const { user } = useUserContext();
   const { snackBar } = useSnackBarContext();
   const [chatUsers, setChatUsers] = useState<string[]>([]);
+  const { data: chatUsersRes, refetch: fetchChatUsers } = useChatListUsersQuery();
   const { data: userEntered } = useChatUserEnteredSubscription();
   const { data: userLeaved } = useChatUserLeavedSubscription();
-  const { data: chatUsersRes, refetch: fetchChatUsers } = useChatListUsersQuery();
 
   // fetch chat users in app startup
   useEffect(() => {
@@ -50,6 +51,15 @@ const useChatUsers = () => {
       setChatUsers(chatUsersRes.chatListUsers);
     }
   }, [chatUsersRes]);
+
+  useEffect(() => {
+    const userLoggedIn = async () => {
+      if (user) {
+        await fetchChatUsers();
+      }
+    };
+    userLoggedIn();
+  }, [user]);
 
   // handles new user subscription event
   // - add to chatUsers

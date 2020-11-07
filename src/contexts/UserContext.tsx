@@ -42,6 +42,9 @@ const UserProvider: React.FC = ({ children }) => {
   useEffect(() => {
     if (user) {
       localStorage.setItem(USER_STORAGE, JSON.stringify(user));
+      if (wsLink) {
+        (wsLink as any).subscriptionClient.close(false, false);
+      }
     } else {
       localStorage.removeItem(USER_STORAGE);
     }

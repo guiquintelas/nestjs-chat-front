@@ -12,8 +12,7 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import App from './App';
 import SnackBarProvider from './contexts/SnackBarContext';
 import ConfirmProvider from './contexts/ConfirmContext';
-import UserProvider from './contexts/UserContext';
-import ChatProvider from './contexts/ChatContext';
+import UserProvider, { getUserFromLocalStorage } from './contexts/UserContext';
 
 let theme = createMuiTheme();
 
@@ -72,6 +71,11 @@ const wsLink = new WebSocketLink({
   uri: API_LINK.replace('http', 'ws'),
   options: {
     reconnect: true,
+    connectionParams: () => {
+      return {
+        user: getUserFromLocalStorage(),
+      };
+    },
   },
 });
 
@@ -108,11 +112,11 @@ ReactDOM.render(
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <SnackBarProvider>
             <ConfirmProvider>
-                <UserProvider>
-                  <HashRouter basename="/">
-                    <App />
-                  </HashRouter>
-                </UserProvider>
+              <UserProvider>
+                <HashRouter basename="/">
+                  <App />
+                </HashRouter>
+              </UserProvider>
             </ConfirmProvider>
           </SnackBarProvider>
         </MuiPickersUtilsProvider>
@@ -121,3 +125,5 @@ ReactDOM.render(
   </>,
   document.getElementById('root'),
 );
+
+export default wsLink;

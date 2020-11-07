@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import wsLink from '..';
 import { useChatEnterMutation, useChatLeaveMutation } from '../graphql/generated/graphql';
 
 type UserContextType = {
@@ -49,22 +50,6 @@ const UserProvider: React.FC = ({ children }) => {
       localStorage.removeItem(USER_STORAGE);
     }
   }, [user]);
-
-  // make sure the users in is chat
-  // this fixes when the backend DB is cleared but
-  // the browser localstorage still has the users persisted
-  useEffect(() => {
-    const autoEnterChat = async () => {
-      if (user) {
-        await enterChat({
-          variables: {
-            nickname: user,
-          },
-        });
-      }
-    };
-    autoEnterChat();
-  }, []);
 
   return (
     <UserContext.Provider

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import wsLink from '..';
 import {
   MessagesQuery,
   useChatListUsersQuery,
@@ -43,6 +44,7 @@ const useChatUsers = () => {
     }
   }, [chatUsersRes]);
 
+  // refetch chat users on user login
   useEffect(() => {
     const userLoggedIn = async () => {
       if (user) {
@@ -96,6 +98,7 @@ const useMessages = () => {
     }
   }, [initialMessages]);
 
+  // refetch messages on user login
   useEffect(() => {
     const userLoggedIn = async () => {
       if (user) {

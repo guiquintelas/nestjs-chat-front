@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import wsLink from '..';
 import {
+  ConnectionType,
   MessagesQuery,
+  useChatListOnlineUsersQuery,
   useChatListUsersQuery,
+  useChatUserChangedOnlineStatusSubscription,
   useChatUserEnteredSubscription,
   useChatUserLeavedSubscription,
   useMessagesQuery,
@@ -17,16 +19,65 @@ export type Message = MessagesQuery['messages'][0];
 type ChatContextType = {
   messages: Message[];
   chatUsers: string[];
+  onlineChatUsers: string[];
   sendMessage: (content: string, nickname: string) => Promise<void>;
 };
 
 export const ChatContext = createContext<ChatContextType>({
   chatUsers: [],
+  onlineChatUsers: [],
   messages: [],
   sendMessage: () => {
     throw new Error('you should only use this context inside the provider!');
   },
 });
+
+const useOnlineChatUsers = () => {
+  const [onlineChatUsers, setOnlineChatUsers] = useState<string[]>([]);
+  const { data: usersOnlineRes } = useChatListOnlineUsersQuery();
+  const { data: onlineRes } = useChatUserChangedOnlineStatusSubscription();
+
+  const addOnlineUser = (user: string) => {
+    if (onlineChatUsers.includes(user)) {
+      return;
+    }
+
+    setOnlineChatUsers([...onlineChatUsers, user]);
+  };
+
+  const removeOnlineUser = (user: string) => {
+    if (!onlineChatUsers.includes(user)) {
+      return;
+    }
+
+    setOnlineChatUsers(onlineChatUsers.filter((el) => el !== user));
+  };
+
+  // fetch chat online users in app startup
+  useEffect(() => {
+    if (usersOnlineRes?.chatListOnlineUsers) {
+      setOnlineChatUsers(usersOnlineRes.chatListOnlineUsers);
+    }
+  }, [usersOnlineRes]);
+
+  // fetch chat online users in app startup
+  useEffect(() => {
+    if (!onlineRes?.chatUserChangedOnlineStatus) {
+      return;
+    }
+    const { user, type } = onlineRes.chatUserChangedOnlineStatus;
+
+    if (type === ConnectionType.Connected) {
+      addOnlineUser(user);
+    } else {
+      removeOnlineUser(user);
+    }
+  }, [onlineRes]);
+
+  return {
+    onlineChatUsers,
+  };
+};
 
 // hook to separate specific ChatUser logic from provider
 const useChatUsers = () => {
@@ -122,6 +173,7 @@ const useMessages = () => {
 
 const ChatProvider: React.FC = ({ children }) => {
   const { chatUsers } = useChatUsers();
+  const { onlineChatUsers } = useOnlineChatUsers();
   const { messages } = useMessages();
 
   const [sendMessage] = useSendMessageMutation();
@@ -131,6 +183,7 @@ const ChatProvider: React.FC = ({ children }) => {
       value={{
         messages,
         chatUsers,
+        onlineChatUsers,
 
         async sendMessage(content, nickname) {
           if (!content) {

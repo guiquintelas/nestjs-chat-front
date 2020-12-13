@@ -37,12 +37,12 @@ yarn start
 
 # 🚧 Roadmap
   - Features
-    - Track online users (users listening for new messages)
-    - Multiple group chats
-    - Message Pagination
-    - Virtual List
-    - Refactor both repos to one monorepo
+    - [x] Track online users (users listening for new messages)
+    - [ ] Multiple group chats
+    - [ ] Message Pagination
+    - [ ] Virtual List
+    - [ ] Refactor both repos to one monorepo
   - Technical Debt
-    - Write tests
-    - Handle api errors
+    - [ ] Write tests
+    - [ ] Handle api errors
 

@@ -1,0 +1,6 @@
+subscription chatUserChangedOnlineStatus {
+  chatUserChangedOnlineStatus {
+    type
+    user
+  }
+}

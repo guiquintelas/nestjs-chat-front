@@ -1,5 +1,7 @@
-import { Box, Divider, Grid, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
+import { Box, Divider, Grid, makeStyles, Paper, Theme, Tooltip, Typography } from '@material-ui/core';
+import { green } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/styles';
+import { Brightness1 } from 'mdi-material-ui';
 import React from 'react';
 import Layout from '../components/Layout';
 import Message from '../components/Message';
@@ -53,7 +55,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const Chat: React.FC = () => {
-  const { chatUsers, messages } = useChatContext();
+  const { chatUsers, messages, onlineChatUsers } = useChatContext();
   const classes = useStyles();
 
   return (
@@ -66,7 +68,17 @@ const Chat: React.FC = () => {
             </Grid>
             {chatUsers.map((chatUser) => (
               <Grid item sm={12} key={chatUser}>
-                {chatUser}
+                <Box display="flex" alignItems="center">
+                  <Box>{chatUser}</Box>
+
+                  {onlineChatUsers.includes(chatUser) && (
+                    <Box ml={1} height={20}>
+                      <Tooltip title="Online">
+                        <Brightness1 style={{ fontSize: '12px', color: green[400], marginTop: '3px' }} />
+                      </Tooltip>
+                    </Box>
+                  )}
+                </Box>
               </Grid>
             ))}
           </Grid>
